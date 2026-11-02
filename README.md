@@ -41,8 +41,8 @@ told "you have mail" and reads it with a tool call. Every LLM call carries who i
 including six staged incidents (a hidden discount, a customer list for a friend, a shared password…).
 
 It exists to produce **realistic, repeatable multi-agent traffic** for the sibling repos
-([llm-proxy-log](../llm-proxy-log/), [llm-proxy-firewall](../llm-proxy-firewall/),
-[llm-session-console](../llm-session-console/)) and to show plainly how agents reach systems.
+([llm-proxy-log](https://github.com/claudiucalomfirescu/llm-proxy-log/blob/main/), [llm-proxy-firewall](https://github.com/claudiucalomfirescu/llm-proxy-firewall/blob/main/),
+[llm-session-console](https://github.com/claudiucalomfirescu/llm-session-console/blob/main/)) and to show plainly how agents reach systems.
 
 ## 60-second quickstart (no API key)
 ```bash
@@ -108,7 +108,7 @@ Alongside it: [TOOLS.md](TOOLS.md) (every tool the agents can call, generated fr
 To regenerate the project, give a coding model the `blueprint/` folder and the **P-REBUILD**
 prompt from PROMPTS.md, then run **P-VERIFY**. The tests in `tests/` cite the requirement ids
 they prove and `demo/data/` holds recorded traffic, so you can tell whether the rebuild behaves
-like this one. The method behind it is [Prax Systems](../prax-systems/README.md).
+like this one. The method behind it is [Prax Systems](https://github.com/claudiucalomfirescu/prax-systems/blob/main/README.md).
 
 ## Tests
 ```bash
