@@ -8,18 +8,11 @@ chat message, a BMW order) is a tool call the LLM asked for, so it is in the pro
     agent = StaffAgent("tom-becker", labels={"task": "E06"})
     out = agent.run("Start your day. ...")       # {"session", "calls", "tools", "answers", "status"}
 """
-from openai import APIError
-
+from agents.loop import tool_loop
 from agents.prompts import staff_prompt
 from agents.toolclient import ToolClient
 from apps.common import personas
-from llm import MODEL, AgentLog, chat, make_client
-
-TOOL_RESULT_MAX = 4000
-
-
-def _content(msg):
-    return (msg.content or "").strip()
+from llm import MODEL, AgentLog, make_client
 
 
 class StaffAgent:
@@ -42,7 +35,7 @@ class StaffAgent:
         messages = [{"role": "system", "content": staff_prompt(self.id)}, {"role": "user", "content": goal}]
         out = {"session": session, "agent": self.id, "calls": 0, "tools": [], "answers": [], "status": "done"}
         pending = list(followups)
-        answer = self._loop(client, tools, messages, log, out)
+        answer = tool_loop(client, tools, messages, log, out, self.max_turns, self.on_event)
         out["answers"].append(answer)
         while not log.blocked and out["status"] == "done":
             # what the employee says next: a scripted follow-up, or the other person's live reply
@@ -51,37 +44,10 @@ class StaffAgent:
                 break
             messages.append({"role": "user", "content": follow})
             self.on_event("followup", session=session, text=follow)
-            answer = self._loop(client, tools, messages, log, out)
+            answer = tool_loop(client, tools, messages, log, out, self.max_turns, self.on_event)
             out["answers"].append(answer)
         if log.blocked:
             out["status"] = "blocked"
             out["firewall"] = log.blocked
         log.end(answer=out["answers"][-1] if out["answers"] else None, status=out["status"])
         return out
-
-    def _loop(self, client, tools, messages, log, out):
-        for _ in range(self.max_turns):
-            try:
-                resp = chat(client, messages, tools=tools.specs, log=log)
-            except APIError as e:
-                out["status"] = "error"
-                out["error"] = f"{type(e).__name__}: {e}"[:300]
-                return None
-            out["calls"] += 1
-            self.on_event("llm_call", session=out["session"])
-            msg = resp.choices[0].message
-            messages.append(msg.model_dump(exclude_none=True))
-            if log.blocked:
-                self.on_event("blocked", session=out["session"], firewall=log.blocked, text=_content(msg)[:400])
-                return _content(msg)
-            if not msg.tool_calls:
-                return _content(msg)
-            for c in msg.tool_calls:
-                result = tools.call(c.function.name, c.function.arguments)
-                log.tool(c.function.name, c.function.arguments, result)
-                out["tools"].append(c.function.name)
-                self.on_event("tool", session=out["session"], tool=c.function.name, args=c.function.arguments,
-                              result=result[:300])
-                messages.append({"role": "tool", "tool_call_id": c.id, "content": result[:TOOL_RESULT_MAX]})
-        out["status"] = "turn_limit"
-        return None

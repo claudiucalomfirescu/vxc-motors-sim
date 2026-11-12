@@ -27,7 +27,7 @@
 | C-01 | Company (`company/`) | 12 personas: role, department, manager, email, which apps they may use, personality, risk profile; business rules | — | persona frontmatter |
 | C-02 | Applications (`apps/`) | The 8 apps as tools over DuckDB, rules enforcement, audit of every call; seeded history Jan–Oct 2026 and the 07:45 morning of the day | tool calls | JSON results, audit rows |
 | C-03 | Services (`apps/server.py`) | Serve the apps over HTTP (K-vxc-tools@1), the notification feed, the clock | HTTP | HTTP |
-| C-04 | Staff agents (`agents/staff.py`) | One employee working one task: tool-calling loop through the proxy | goal, follow-ups | tool calls, a final answer |
+| C-04 | Staff agents (`agents/staff.py`, loop in `agents/loop.py`) | One employee working one task: tool-calling loop through the proxy | goal, follow-ups | tool calls, a final answer |
 | C-05 | Outside agents (`agents/external.py`) | Customers and BMW: `MailAgent` (mail tools only) and `Talker` (face to face / phone, no tools) | doorbell or prompt | emails, spoken words |
 | C-06 | BMW technical support agent (`agents/bmw.py`) | Writes the answer of the judgment tool `bmw_open_tech_case` | case + BMW facts | answer text |
 | C-07 | Director (`sim/run.py`, `sim/day.py`) | Clock, timeline of the day, task queue, worker pool, doorbells, IT admin actions, budget stop | day script, `/events` | `runner.jsonl`, `summary.json` |

@@ -116,7 +116,8 @@ to the service that hosts the tool; wait_ready().
 Write agents/prompts.py (staff prompt from the persona: who you are, responsibilities, the company
 rules, "you are an AI agent acting for this person, you act only through your tools; email = mail_send,
 team chat = chat_send; when told a message arrived, read it with mail_read / chat_unread first";
-customer prompts; BMW retailer desk; BMW technical support engineer). agents/staff.py: StaffAgent
+customer prompts; BMW retailer desk; BMW technical support engineer). agents/loop.py: tool_loop, the one
+tool-calling loop every agent with tools shares. agents/staff.py: StaffAgent
 running the tool-calling loop (max 8 model calls per user turn, scripted follow-ups or a live
 respond() callback, stops when the proxy blocks the session). agents/external.py: MailAgent (only
 the three mail tools, acting as ext:<email>) and Talker (no tools, for face-to-face and phone).

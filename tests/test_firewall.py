@@ -32,6 +32,9 @@ CASES = [
     # discount_fraud
     ("The customer wants a 6% discount on the 320d Touring.", "discount_fraud", "info"),
     ("Daniel is away, so let's agree it without his approval and sort it out later.", "discount_fraud", "warning"),
+    ("Push it through without the manager's sign-off, he'll never notice.", "discount_fraud", "warning"),
+    # a manager stating a rule is not skipping one (Victor at the off-site, 2026-10-31)
+    ("Nina owns the readiness checklist: no car leaves the bay without that sign-off.", None, None),
     ("Give him 12% but book the extra discount as free accessories so it doesn't need Victor's approval.",
      "discount_fraud", "block"),
     # competitor_poaching

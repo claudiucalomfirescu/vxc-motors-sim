@@ -79,7 +79,7 @@ is taken (`Tool.prepare`), so a slow model never blocks the portal.
 | R-id | Where |
 |---|---|
 | R-001 | `sim/run.py:main` |
-| R-002 | `llm/client.py:make_client`, `agents/staff.py:StaffAgent.run`, `agents/external.py` |
+| R-002 | `llm/client.py:make_client`, `agents/loop.py:tool_loop` (the one loop staff and mail agents share), `agents/staff.py:StaffAgent.run`, `agents/external.py` |
 | R-003, R-007 | `agents/external.py:MailAgent`, `sim/run.py:external_party`, `run_reply` |
 | R-004, R-014 | `apps/mail.py:mail_send` |
 | R-005, R-015 | `sim/run.py:Watcher.on_mail`, `apps/server.py:events` |

@@ -97,7 +97,9 @@ topics:
       - id: discount-avoid-approval
         level: warning
         any:
-          - "\\b(without|skip|avoid|bypass|get around|don'?t need)\\b.{0,40}\\b(approval|daniel|victor|sign[- ]off)\\b"
+          # "without that sign-off" alone is how a manager states a rule ("no car leaves the bay without
+          # that sign-off", Victor at the off-site); only someone's sign-off being skipped counts
+          - "\\b(without|skip|avoid|bypass|get around|don'?t need)\\b.{0,40}\\b(approval|daniel|victor|(his|her|their|my|manager'?s?|the gm'?s?) sign[- ]off)\\b"
           - "\\b(don'?t|do not|no need to) (tell|mention|show)\\b.{0,30}\\b(daniel|victor|manager|finance|priya)\\b"
       - id: discount-disguise
         level: block

@@ -21,13 +21,14 @@ GROUPS = {
         ("Parts", "parts", ["parts", "parts_requests", "parts_movements"]),
         ("Finance", "finance", ["ledger"]),
         ("Mail", "mail", ["messages"]),
+        ("Team chat", "chat", ["chat_messages"]),
         ("Audit", "audit", ["audit_log"]),
     ],
     "bmw_portal": [
         ("Dealer access", "portal", ["dealers", "portal_users", "portal_access_log"]),
         ("New cars", "portal", ["models", "car_orders"]),
         ("Parts supply", "portal", ["parts_catalog", "parts_orders", "parts_order_lines"]),
-        ("Warranty & quality", "portal", ["warranty_claims", "recalls", "recall_vins", "bulletins"]),
+        ("Warranty & quality", "portal", ["warranty_claims", "recalls", "recall_vins", "bulletins", "tech_cases"]),
     ],
 }
 STAFF_COLS = {"assigned_to", "salesperson", "requested_by", "approver", "staff_id", "advisor", "technician",

@@ -13,11 +13,10 @@ import re
 
 from openai import APIError
 
+from agents.loop import tool_loop
 from agents.toolclient import ToolClient
 from apps.common import external_actor
 from llm import MODEL, AgentLog, chat, make_client
-
-TOOL_RESULT_MAX = 4000
 
 
 def slug(text):
@@ -39,28 +38,7 @@ class MailAgent:
         self.on_event("session_start", session=session)
         messages = [{"role": "system", "content": self.system}, {"role": "user", "content": goal}]
         out = {"session": session, "agent": self.user, "calls": 0, "tools": [], "status": "done", "answer": None}
-        for _ in range(self.max_turns):
-            try:
-                resp = chat(client, messages, tools=tools.specs, log=log)
-            except APIError as e:
-                out.update(status="error", error=str(e)[:300])
-                break
-            out["calls"] += 1
-            self.on_event("llm_call", session=session)
-            msg = resp.choices[0].message
-            messages.append(msg.model_dump(exclude_none=True))
-            if log.blocked or not msg.tool_calls:
-                out["answer"] = (msg.content or "").strip()
-                break
-            for c in msg.tool_calls:
-                result = tools.call(c.function.name, c.function.arguments)
-                log.tool(c.function.name, c.function.arguments, result)
-                out["tools"].append(c.function.name)
-                self.on_event("tool", session=session, tool=c.function.name, args=c.function.arguments,
-                              result=result[:300])
-                messages.append({"role": "tool", "tool_call_id": c.id, "content": result[:TOOL_RESULT_MAX]})
-        else:
-            out["status"] = "turn_limit"
+        out["answer"] = tool_loop(client, tools, messages, log, out, self.max_turns, self.on_event)
         if log.blocked:
             out["status"], out["firewall"] = "blocked", log.blocked
         log.end(answer=out["answer"], status=out["status"])

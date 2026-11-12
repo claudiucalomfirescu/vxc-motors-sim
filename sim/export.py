@@ -2,9 +2,6 @@
 
     python -m sim.export --demo                # logs/workday -> demo/data/ + viz/workday.html (the shipped day)
     python -m sim.export                       # logs/workday -> runs/2026-10-27/ + viz/workday.html
-    python -m sim.export --name 2026-10-27-day2 --title "Day 2 · firewall v2" \
-        --also day1="Day 1 · firewall v1"=runs/2026-10-27
-                                                  # a second run of the same day, both in the timeline page
 
 runs/<date>/ gets everything the console, replay and the timeline need, with no secrets:
   proxy.db        the proxy's log (calls, signals, admin_actions)
@@ -176,18 +173,10 @@ def timeline(dest):
             "messages": msgs, "admin": acts, "stats": stats}
 
 
-def bake(data, template, out, days=None):
-    """Put the timeline data in the page. With days ({key: {"title", "data"}}) the page gets all of them
-    and a Day menu (viz/daypicker.js); `data` is then ignored."""
-    html = open(template).read()
-    if days:
-        blob = redact(json.dumps(days, default=str)).replace("</", "<\\/")
-        picker = open(os.path.join(ROOT, "viz", "daypicker.js")).read()
-        html = html.replace("/*__DATA__*/null", "window.SNAPSHOT")
-        html = html.replace("<script>", f"<script>window.DAYS = {blob};\n{picker}</script>\n<script>", 1)
-    else:
-        blob = redact(json.dumps(data, default=str)).replace("</", "<\\/")
-        html = html.replace("/*__DATA__*/null", blob)
+def bake(data, template, out):
+    """Put the timeline data in the page."""
+    blob = redact(json.dumps(data, default=str)).replace("</", "<\\/")
+    html = open(template).read().replace("/*__DATA__*/null", blob)
     with open(out, "w") as f:
         f.write(html)
 
@@ -197,9 +186,6 @@ def main():
     from sim.day import DATE
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--name", default=DATE, help="folder under runs/ (default: the simulated date)")
-    ap.add_argument("--title", help="this run's name in the page's Day menu")
-    ap.add_argument("--also", action="append", default=[], metavar="KEY=TITLE=RUNDIR",
-                    help="earlier runs to keep selectable in viz/workday.html")
     ap.add_argument("--no-snapshot", action="store_true", help="only rebuild the page from runs/<name>")
     ap.add_argument("--demo", action="store_true", help="write the snapshot to demo/data/ (the shipped recorded day)")
     a = ap.parse_args()
@@ -209,13 +195,7 @@ def main():
             shutil.rmtree(dest)
         snapshot(DATE, dest)
     data = timeline(dest)
-    days = None
-    if a.also:
-        days = {"latest": {"title": a.title or a.name, "data": data}}
-        for spec in a.also:
-            key, title, run = spec.split("=", 2)
-            days[key] = {"title": title, "data": timeline(os.path.join(ROOT, run) if not os.path.isabs(run) else run)}
-    bake(data, os.path.join(ROOT, "viz", "workday_template.html"), os.path.join(ROOT, "viz", "workday.html"), days)
+    bake(data, os.path.join(ROOT, "viz", "workday_template.html"), os.path.join(ROOT, "viz", "workday.html"))
     print(json.dumps(data["stats"], indent=1))
 
 
