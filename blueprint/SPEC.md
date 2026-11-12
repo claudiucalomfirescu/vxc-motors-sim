@@ -127,6 +127,7 @@ A run folder (`runs/<run-name>/`, and the shipped `demo/data/`) contains:
 | R-025 | The seed MUST be deterministic: two builds give identical data. | test `test_R025_seed_reproducible` |
 | R-026 | The day script MUST be data (`sim/day.py` EVENTS), and `--plan` MUST print it without any LLM call. | test `test_R026_plan_needs_no_llm` |
 | R-027 | Every incident event MUST carry an `expect` ground truth, scored by `python -m sim.evaluate <run>`. | test `test_R027_incidents_have_ground_truth` |
+| R-028 | The day timeline page MUST show, for each task, its tool calls in order (what the LLM asked for, what the application answered), and every email and chat as a link from the sender's lane to the recipient's; bars MUST NOT cover each other. | test `test_R028_timeline_has_steps_and_links` |
 
 ## 5. Quality bars
 | Id | Bar | Check |

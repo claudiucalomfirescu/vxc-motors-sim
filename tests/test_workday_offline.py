@@ -98,6 +98,17 @@ class OfflineWorkday(unittest.TestCase):
         blocked = {r.get("incident") for r in self.events("blocked")}
         self.assertTrue({"INC-1", "INC-3", "INC-5"} <= blocked, blocked)
 
+    def test_R028_timeline_has_steps_and_links(self):
+        from sim.export import timeline
+        data = timeline(os.path.join(self.dir, "run"))
+        staff = [t for t in data["tasks"] if t["kind"] == "staff" and t.get("tools")]
+        self.assertTrue(staff)
+        for t in staff:   # every tool the task used is in its step list, in order
+            self.assertEqual([s["tool"] for s in t.get("steps", []) if "tool" in s], t["tools"], t["id"])
+        page = open(os.path.join(ROOT, "viz", "workday_template.html")).read()
+        self.assertIn("function links()", page)    # emails and chats drawn between lanes
+        self.assertIn("ends.findIndex", page)      # busy lanes stack into rows instead of overlapping
+
     def test_R020_director_never_touches_business_data(self):
         src = open(os.path.join(ROOT, "sim", "run.py")).read()
         self.assertNotIn("duckdb", src)

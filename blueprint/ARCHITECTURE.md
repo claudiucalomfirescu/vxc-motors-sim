@@ -86,6 +86,7 @@ is taken (`Tool.prepare`), so a slow model never blocks the portal.
 | R-006, R-013 | `apps/chat.py`, `sim/run.py:Watcher.on_chat` |
 | R-008, R-027 | `sim/day.py:EVENTS`, `proxy/firewall_topics.yaml`, `sim/evaluate.py` |
 | R-009 | `sim/export.py --demo`, `demo/data/`, `viz/workday.html` |
+| R-028 | `sim/export.py:timeline` (steps per task), `viz/workday_template.html` (`links`, row stacking in `lanes`, zoom) |
 | R-010–R-012, R-016 | `apps/server.py:make_handler`, `tools_for`, `apps/common.py:profile` |
 | R-017, R-021 | `apps/bmw_portal/__init__.py:bmw_open_tech_case`, `agents/bmw.py` |
 | R-018 | `apps/common.py:call`, `_audit` |

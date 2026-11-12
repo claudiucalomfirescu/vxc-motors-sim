@@ -128,6 +128,10 @@ def timeline(dest):
             by_session[r.get("session")] = r["task"]
         elif r["event"] == "followup" and r["task"] in tasks:
             tasks[r["task"]].setdefault("followups", []).append(r["text"])
+            tasks[r["task"]].setdefault("steps", []).append({"say": r["text"][:200]})
+        elif r["event"] == "tool" and r.get("task") in tasks:   # each tool call the LLM asked for, in order
+            tasks[r["task"]].setdefault("steps", []).append(
+                {"tool": r["tool"], "args": (r.get("args") or "")[:200], "result": (r.get("result") or "")[:200]})
     for s in sigs:
         t = tasks.get(by_session.get(s["session"]))
         if t:
