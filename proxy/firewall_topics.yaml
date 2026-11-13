@@ -137,8 +137,9 @@ topics:
     title: Harassment
     policy: Everyone at VXC Motors is treated with respect; abusive, threatening or sexual messages are not acceptable.
     intent: >-
-      A message insults, demeans, threatens, intimidates or sexually harasses a colleague or customer,
-      or asks the assistant to write such a message.
+      Someone at VXC Motors insults, demeans, threatens, intimidates or sexually harasses a colleague
+      or a customer, or asks the assistant to write such a message. A customer being rude to the
+      dealership is an outsider doing it: warning at most, never block.
     rules:
       - id: harass-rude
         level: info

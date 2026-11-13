@@ -43,7 +43,7 @@ All decided autonomously overnight on 2026-10-30 while the user slept; please re
   (they are in `proxy.db`, unused). The circuit breaker kept the meeting moving on GLM.
 - **The proxy's firewall ran too.** It made 72 intent-check calls (agent `firewall`) on `info` signals,
   mostly `customer_pii_leak` keyword hits on first names, and raised one false-positive **warning** on Victor
-  (`discount-avoid-approval` matched "no car leaves the bay without that sign-off"). Useful evidence for the
+  (`discount-avoid-approval` matched "no car leaves the bay without that sign-off"); fixed 2026-11-12: the rule now needs *someone's* sign-off being skipped, with a regression test). Useful evidence for the
   firewall repo: keyword rules fire on ordinary meeting talk.
 - **Game formats.** 4 of 12 players left out the `LIE:` line, so their lies could not be scored; they are
   shown without a lie. A rebuild should re-ask once when a required line is missing.

@@ -132,7 +132,7 @@ A run folder (`runs/<run-name>/`, and the shipped `demo/data/`) contains:
 ## 5. Quality bars
 | Id | Bar | Check |
 |---|---|---|
-| R-101 | A live day MUST stay under the budget: the director passes `GATEWAY_FREE_RPM` / `GATEWAY_PAID_RPM` (8/min for the recorded day) and `GATEWAY_SPEND_CAP_USD` (default 4) to the proxy, and stops starting tasks at `--max-calls`. | manual: DEMO.md "Live" step, `summary.json` calls and minutes |
+| R-101 | A live day MUST stay under the budget: the director passes `GATEWAY_FREE_RPM` / `GATEWAY_PAID_RPM` (15/min for the recorded day) and `GATEWAY_SPEND_CAP_USD` (default 4) to the proxy, and stops starting tasks at `--max-calls`. | manual: DEMO.md "Live" step, `summary.json` calls and minutes |
 | R-102 | The whole offline day (fake LLM) MUST finish in under 5 minutes on a laptop. | test `test_R102_offline_day_is_fast` |
 | R-103 | Customer data in the seed MUST be fictional (`*.example` domains, generated names). | manual: `data/parquet/internal/customers.parquet` |
 

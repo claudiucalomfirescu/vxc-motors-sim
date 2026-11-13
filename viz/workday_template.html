@@ -73,7 +73,7 @@ h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: v
 .lane { border-bottom: 1px solid var(--line); min-height: 34px }
 .who { padding: 6px 10px; font-size: 12.5px; border-right: 1px solid var(--line); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .who small { color: var(--muted); display: block; font-size: 11px }
-.track { position: relative; background-image: linear-gradient(to right, var(--line) 1px, transparent 1px); background-size: 10% 100% }
+.track { position: relative; background-image: linear-gradient(to right, var(--line) 1px, transparent 1px); background-size: var(--hour, 10%) 100% }
 .bar { position: absolute; top: 5px; height: 22px; border-radius: 4px; border: 1px solid var(--agent); background: var(--agent-bg); min-width: 8px; padding: 0 4px; font-size: 10.5px; overflow: hidden; white-space: nowrap; text-overflow: clip; color: var(--agent); line-height: 20px; z-index: 1 }
 .bar.blocked { border-color: var(--block); background: var(--block-bg); color: var(--block); font-weight: 600 }
 .bar.ext { border-color: var(--ext); background: var(--ext-bg); color: var(--ext) }
@@ -142,8 +142,12 @@ h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: v
 const DATA = /*__DATA__*/null;
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
-const T0 = 8 * 60, T1 = 18 * 60;
 const mins = hm => { const [h, m] = (hm || "08:00").split(":").map(Number); return h * 60 + m; };
+// 08:00 to the end of the last task, rounded up to the hour (at least 18:00)
+const T0 = 8 * 60, T1 = Math.max(18 * 60, Math.ceil(Math.max(...DATA.tasks.map(t => mins(t.end || t.start))) / 60) * 60);
+const HOURS = (T1 - T0) / 60;
+const hm = m => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+document.documentElement.style.setProperty("--hour", `${100 / HOURS}%`);
 const pct = hm => Math.max(0, Math.min(100, (mins(hm) - T0) / (T1 - T0) * 100));
 const people = Object.fromEntries(DATA.people.map(p => [p.id, p]));
 const nameOf = id => people[id]?.name || (id || "").replace(/^customer-/, "customer ").replace(/-/g, " ");
@@ -164,7 +168,7 @@ function sigLevel(t) {
 
 function figs() {
   const s = DATA.stats;
-  $("sub").textContent = `Tuesday ${DATA.date}, 08:00 to about 18:00 simulated. ${DATA.people.length} employees as LLM agents with their own tools, ` +
+  $("sub").textContent = `Tuesday ${DATA.date}, 08:00 to ${hm(T1)} simulated. ${DATA.people.length} employees as LLM agents with their own tools, ` +
     `simulated customers and BMW's dealer desk, all through the logging, firewalled proxy. Ran live in ${s.minutes} minutes of real time.`;
   const f = [
     ["LLM calls through the proxy", s.calls], ["agent sessions", s.sessions], ["tasks worked", s.tasks],
@@ -198,7 +202,7 @@ function lanes() {
     const key = ext ? (t.title.startsWith("BMW") ? "bmw" : "customers") : t.actor;
     (lanesBy[key] = lanesBy[key] || []).push(t);
   }
-  const ticks = Array.from({length: 11}, (_, i) => `<span class="tick" style="left:${i * 10}%">${String(8 + i).padStart(2, "0")}:00</span>`).join("");
+  const ticks = Array.from({length: HOURS + 1}, (_, i) => `<span class="tick" style="left:${i * 100 / HOURS}%${i === HOURS ? ";transform:translateX(-100%)" : ""}">${String(8 + i).padStart(2, "0")}:00</span>`).join("");
   let html = `<div class="axis"><div></div><div class="ticks">${ticks}</div></div>`;
   // Bars never cover each other: each gets at least BAR_MIN px (room for a short label) and a busy
   // lane stacks into extra rows. Row assignment depends on the track width, so zoom and resize re-run it.
