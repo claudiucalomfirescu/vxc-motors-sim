@@ -165,7 +165,7 @@ OPENROUTER_API_KEY=sk-fake FIREWALL_INTENT=off \
 GATEWAY_FREE_RPM=1000 python3 -m sim.run</pre></div>
     <div style="display:grid;gap:8px"><h3>Live, paced to the free tier</h3>
 <pre>export OPENROUTER_API_KEY=...
-GATEWAY_FREE_RPM=8 python3 -m sim.run --max-calls 500
+GATEWAY_FREE_RPM=15 python3 -m sim.run
 python3 -m sim.export --demo</pre></div>
   </div>
   <h3>Build your own company</h3>
@@ -248,7 +248,7 @@ const STORIES={
   ["aisha","portal","tool","Her agent calls the BMW portal over HTTP. This tool needs judgment, so the portal asks someone first.","POST :8200/call bmw_open_tech_case"],
   ["portal","tech","judge","The portal reads its bulletins and open recalls for the VIN and hands them to BMW's technical support agent.","tech_support_answer(vin, symptom, facts)"],
   ["tech","proxy","llm","That agent calls the LLM through the same proxy as <b>X-Agent-User: bmw-tech-support</b>, <b>X-Agent-Dept: BMW UK</b>.","calls #211 bmw-tech-support BMW UK"],
-  ["llm","tech","llm","The engineer's answer comes back: next diagnostic steps, and a bulletin number only if one is in the facts.","answer: “Read the HV fault memory with ISTA…”"],
+  ["llm","tech","llm","The engineer's answer comes back: next diagnostic steps, and a bulletin number only if one is in the facts.","answer: “Proceed with ISTA diagnosis, reading the complete fault memory…”"],
   ["portal","aisha","tool","The portal stores case BMW-TC-00001 with the answer and returns it to Aisha's agent as the tool result.","tech_cases BMW-TC-00001 answered_by bmw-tech-support"]]}
 };
 const svg=document.getElementById("stageSvg"), cap=document.getElementById("caption"), log=document.getElementById("log"), stepno=document.getElementById("stepno");

@@ -27,7 +27,10 @@ vxc-motors-sim is a whole dealership run by LLM agents, with real (small, local)
 their tools and six staged incidents in the day, so you can generate that traffic and see the
 plumbing.
 
-**Animated explainer:** [explainers/index.html](explainers/index.html) · published: https://claude.ai/artifact/8wC8ce5VHxeCewFyGd2izD
+**Watch:** [the 80-second video](explainers/vxc-explainer.mp4) · **Explore:** [animated explainer](explainers/index.html)
+([published](https://claude.ai/artifact/8wC8ce5VHxeCewFyGd2izD)) · **See the day:** `python3 demo/run_demo.py`
+
+<p align="center"><img src="explainers/timeline.png" alt="The recorded day: one lane per person, every task a bar, emails and chats drawn between lanes, the six staged incidents and what the firewall did" width="100%"></p>
 
 ## What it is
 VXC Motors sells and services BMWs in Reading. Its twelve people (a GM, reception, finance, a sales
@@ -62,17 +65,36 @@ GATEWAY_FREE_RPM=1000 python3 -m sim.run
 ```bash
 export OPENROUTER_API_KEY=...                         # only the proxy ever sees it
 python3 -m sim.run --plan                             # the day's script, no LLM calls
-GATEWAY_FREE_RPM=8 python3 -m sim.run --max-calls 500 # ~1 hour at 8 requests/min on the free model
+GATEWAY_FREE_RPM=15 python3 -m sim.run               # ~35 min, about 520 calls on the free model
 python3 -m sim.export --demo                          # snapshot into demo/data (keys scrubbed) + viz/workday.html
 python3 -m sim.evaluate demo/data                     # firewall precision/recall against the script's ground truth
 ```
-If the free model is not answering, add `LLM_MODEL=z-ai/glm-5.3-flash` (a cheap paid model; a whole
-day costs cents; `GATEWAY_SPEND_CAP_USD` caps it, default 4).
+The agents use `nvidia/nemotron-3.5-super-vl:free`, chosen in a bake-off of four free OpenRouter models
+with tool calling (D-020 in [DECISIONS.md](blueprint/DECISIONS.md)); the shipped day cost $0. OpenRouter allows
+1,000 free requests a day on an account that has bought credits (50 without; reset 00:00 UTC), so one day fits. If the free model is not
+answering, add `LLM_MODEL=z-ai/glm-5.3-flash` (a cheap paid model; a whole day costs cents;
+`GATEWAY_SPEND_CAP_USD` caps it, default 4, and counts the key's lifetime usage).
 
 One agent on its own: `python3 -m apps.server &` then
 `python3 -m agents.run_one tom-becker "Check your inbox and deal with what is waiting."`
 
 ## How it works
+
+Five ideas carry the whole simulation:
+
+1. **An agent can only act by asking the LLM for a tool call.** The LLM writes text; the agent program
+   runs the call it asked for; the application decides whether it is allowed. Nothing else changes the world.
+2. **A tool is one operation of a real application** (`crm_assign_lead`, `dms_set_deal_price`): code over
+   DuckDB that enforces the business rules (discount limits, approvals, parts only against a job card)
+   and writes an audit row, whether the call is accepted or refused.
+3. **A message is a tool call, then a doorbell.** `chat_send` / `mail_send` only store the message. The
+   director sees *who wrote to whom* (never the text) and wakes the recipient, who reads it with their
+   own tool call. So every message passes through the proxy twice.
+4. **Some tools need judgment, and another agent gives it.** `bmw_open_tech_case` is answered by BMW's
+   technical support agent, with its own identity and its own LLM call.
+5. **One proxy sees it all.** Every call names its speaker (`X-Agent-User`, `X-Agent-Dept`), so the log,
+   the firewall and the budget see a company, not a pile of anonymous requests.
+
 ```mermaid
 flowchart LR
   D[director<br/>clock · script · doorbells] --> A[staff + customer + BMW agents]
@@ -128,7 +150,7 @@ python3 tools/prax_check.py . --level silver   # Prax Systems compliance
 | `proxy/` | vendored logging + firewall + gateway proxy, VXC topic file |
 | `demo/` | the recorded day (`data/`) and the walkthrough |
 | `viz/` | the day timeline page, 3D dealership, data-model page |
-| `explainers/` | the animated explainer |
+| `explainers/` | the animated explainer, the [80-second video](explainers/vxc-explainer.mp4) and its Remotion source ([`video/`](explainers/video/SCRIPT.md)), README images |
 | [`people/`](people/README.md) | each employee's resume, job, persona and soul (intrinsic context, added to every staff prompt) |
 | [`offsite/`](offsite/README.md) | the all-staff off-site held in a chat: recorded run and replay |
 

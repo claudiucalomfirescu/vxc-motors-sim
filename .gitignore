@@ -3,3 +3,5 @@ data/*.duckdb.wal
 __pycache__/
 *.pyc
 logs/
+explainers/video/node_modules/
+explainers/video/public/

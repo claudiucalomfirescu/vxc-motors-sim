@@ -1,0 +1,26 @@
+{
+  "name": "vxc-explainer-video",
+  "version": "1.0.0",
+  "description": "80-second explainer video of vxc-motors-sim (Remotion)",
+  "repository": {},
+  "license": "UNLICENSED",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
+  "private": true,
+  "dependencies": {
+    "@remotion/cli": "4.0.540",
+    "@remotion/transitions": "^4.0.540",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.540"
+  },
+  "scripts": {
+    "prepare-assets": "mkdir -p public/avatars && cp ../../company/avatars/*.svg public/avatars/ && cp ../timeline-dark.png public/timeline.png",
+    "render": "remotion render VxcExplainer ../vxc-explainer.mp4",
+    "dev": "remotion studio"
+  },
+  "allowScripts": {
+    "esbuild": false
+  }
+}
